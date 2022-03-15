@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>eurodk-test</title>
+</head>
+<body>
+    <form method="GET">
+        <input type="text" name="vat">
+        <input type="submit">
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script type="application/javascript">
+        $(document).ready(function () {
+            $('input[type=submit]').on('click', function (e) {
+                e.preventDefault();
+                let vat = $('input[name=vat]').val();
+                $.ajax({
+                    url: '/login',
+                    method: 'post',
+                    data: { email: 'test@eurodk.com', password: 'admin' },
+                    success: function (data) {
+                        let token = data.data;
+                        $.ajax({
+                            url: "/vies/vat/validate",
+                            method: 'get',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            },
+                            data: { vat: vat },
+                            success: function (data) {
+                                let result = data.data;
+                                alert(`
+message: Your VAT Number has been successfully validated. Your company legal data was updated according to the VIES database.
+countryCode: ${result.countryCode}
+vatNumber: ${result.vatNumber}
+valid: ${result.valid}
+requestDate: ${result.requestDate}
+name: ${result.name}
+address: ${result.address}
+                                `);
+                            },
+                            error: function () {
+                                alert(`
+message: The VAT number you are requesting is not valid.
+Either the Number is not active or not allocated.
+Please double-check that you are entering the right VAT Number.
+                                `);
+                            }
+                        });
+                    },
+                });
+            });
+        });
+    </script>
+</body>
+</html>
