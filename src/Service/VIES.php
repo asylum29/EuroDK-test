@@ -27,7 +27,7 @@ class VIES implements VATValidatorInterface
      */
     public function validate(string $vat): VAT
     {
-        if (!preg_match('/^([A-Z]*)([0-9]*)$/u', $vat, $matches)) {
+        if (!preg_match('/^([A-Z]{2})([0-9]*)$/u', $vat, $matches)) {
             throw new Exception('Invalid VAT format');
         }
         /** @noinspection PhpUndefinedMethodInspection */
