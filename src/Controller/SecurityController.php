@@ -6,7 +6,9 @@ use App\Exception\ApiException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\InMemoryUser;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class SecurityController extends BaseController
@@ -16,6 +18,7 @@ class SecurityController extends BaseController
      *
      * @param Request $request
      * @param UserProviderInterface $userProvider
+     * @param UserPasswordHasherInterface $passwordHasher
      * @param JWTTokenManagerInterface $JWTManager
      *
      * @return JsonResponse
@@ -25,13 +28,15 @@ class SecurityController extends BaseController
     public function login(
         Request $request,
         UserProviderInterface $userProvider,
+        UserPasswordHasherInterface $passwordHasher,
         JWTTokenManagerInterface $JWTManager
     ): JsonResponse {
         $identifier = $request->get('email');
+        /** @var InMemoryUser $user */
         $user = $userProvider->loadUserByIdentifier($identifier);
 
         $password = $request->get('password');
-        if ($user->getPassword() != $password) {
+        if (!$passwordHasher->isPasswordValid($user, $password)) {
             $this->error('Password is not valid.');
         }
 
