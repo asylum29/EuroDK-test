@@ -31,7 +31,7 @@ class VIESController extends BaseController
     ): Response {
         $result = $validator->validate($request->get('vat'));
         if (!$result->getValid()) {
-            $this->error('VAT not valid');
+            $this->error('VAT is not valid');
         }
         $logger->write($result);
 
