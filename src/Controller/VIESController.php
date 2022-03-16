@@ -30,12 +30,11 @@ class VIESController extends BaseController
         VATLoggerInterface $logger
     ): Response {
         $result = $validator->validate($request->get('vat'));
-        if ($result->getValid()) {
-            $logger->write($result);
-
-            return $this->success($result);
+        if (!$result->getValid()) {
+            $this->error('VAT not valid');
         }
+        $logger->write($result);
 
-        $this->error('VAT not valid');
+        return $this->success($result);
     }
 }
